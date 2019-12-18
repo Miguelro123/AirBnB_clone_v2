@@ -1,16 +1,19 @@
 #!/usr/bin/python3
 """This is the console for AirBnB"""
 import cmd
+import json
+import shlex
+import models
 from models import storage
-from datetime import datetime
-from models.base_model import BaseModel
+from models.engine.file_storage import FileStorage
+from models.engine.db_storage import DBStorage
+from models.base_model import BaseModel, Base
 from models.user import User
+from models.place import Place
 from models.state import State
 from models.city import City
 from models.amenity import Amenity
-from models.place import Place
 from models.review import Review
-from shlex import split
 
 
 class HBNBCommand(cmd.Cmd):
@@ -38,18 +41,26 @@ class HBNBCommand(cmd.Cmd):
             SyntaxError: when there is no args given
             NameError: when there is no object taht has the name
         """
-        try:
-            if not line:
-                raise SyntaxError()
-            my_list = line.split(" ")
-            obj = eval("{}()".format(my_list[0]))
-            obj.save()
-            print("{}".format(obj.id))
-        except SyntaxError:
+        if len(args) == 0:
             print("** class name missing **")
+            return
+        try:
+            args = self.splitter(args)
+            new_instance = eval(args[0])()
+            for x in args[1:]:
+                n_ag = x.split("=")
+                if hasattr(new_instance, n_ag[0]):
+                    try:
+                        n_ag[1] = eval(n_ag[1])
+                    except(IndexError, ValueError):
+                        pass
+                    if type(n_ag[1]) is str:
+                        n_ag[1] = n_ag[1].replace("_", " ")
+                    setattr(new_instance, n_ag[0], n_ag[1])
+            new_instance.save()
+            print(new_instance.id)
         except NameError:
             print("** class doesn't exist **")
-
     def do_show(self, line):
         """Prints the string representation of an instance
         Exceptions:
