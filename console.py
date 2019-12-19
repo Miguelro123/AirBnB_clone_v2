@@ -3,11 +3,8 @@
 import cmd
 import json
 import shlex
-import models
 from models import storage
-from models.engine.file_storage import FileStorage
-from models.engine.db_storage import DBStorage
-from models.base_model import BaseModel, Base
+from models.base_model import BaseModel
 from models.user import User
 from models.place import Place
 from models.state import State
@@ -35,32 +32,37 @@ class HBNBCommand(cmd.Cmd):
         """Quit command to exit the program at end of file"""
         return True
 
-    def do_create(self, line):
+    def do_create(self, arg):
         """Creates a new instance of BaseModel, saves it
         Exceptions:
             SyntaxError: when there is no args given
             NameError: when there is no object taht has the name
         """
-        if len(args) == 0:
-            print("** class name missing **")
-            return
         try:
-            args = self.splitter(args)
-            new_instance = eval(args[0])()
-            for x in args[1:]:
-                n_ag = x.split("=")
-                if hasattr(new_instance, n_ag[0]):
-                    try:
-                        n_ag[1] = eval(n_ag[1])
-                    except(IndexError, ValueError):
-                        pass
-                    if type(n_ag[1]) is str:
-                        n_ag[1] = n_ag[1].replace("_", " ")
-                    setattr(new_instance, n_ag[0], n_ag[1])
-            new_instance.save()
-            print(new_instance.id)
+            if not arg:
+                raise SyntaxError()
+            my_list = arg.split(" ")
+            obj = eval("{}()".format(my_list[0]))
+            for index, iter in enumerate(my_list):
+                if index > 0:
+                    param = iter.split("=")
+                    key = param[0]
+                    value = param[1]
+                    if value.isdigit():
+                        setattr(obj, key, int(value))
+                    elif value.replace('.', '', 1).isdigit():
+                        setattr(obj, key, float(value))
+                    else:
+                        value = value.replace('_', ' ')
+                        new_value = value.replace('"', '')
+                        setattr(obj, key, new_value)
+            obj.save()
+            print("{}".format(obj.id))
+        except SyntaxError:
+            print("** class name missing **")
         except NameError:
             print("** class doesn't exist **")
+
     def do_show(self, line):
         """Prints the string representation of an instance
         Exceptions:
