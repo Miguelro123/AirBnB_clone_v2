@@ -29,44 +29,44 @@ To start, navigate to the project folder and enter `./console.py` in the shell.
 ```
 #### Create
 ```
-`create <class name>`
+create <class name>
 Ex:
-`create BaseModel`
+create BaseModel
 ```
 #### Show
 ```
-`show <class name> <object id>`
+show <class name> <object id>
 Ex:
-`show User my_id`
+show User my_id
 ```
 #### Destroy
 ```
-`destroy <class name> <object id>`
+destroy <class name> <object id>
 Ex:
-`destroy Place my_place_id`
+destroy Place my_place_id
 ```
 #### All
 ```
-`all` or `all <class name>`
+all or all <class name>
 Ex:
-`all` or `all State`
+all or all State
 ```
 #### Quit
 ```
-`quit` or `EOF`
+quit or EOF
 ```
 #### Help
 ```
-`help` or `help <command>`
+help or help <command>
 Ex:
-`help` or `help quit`
+help or help quit
 
-Additionally, the console supports `<class name>.<command>(<parameters>)` syntax.
+Additionally, the console supports <class name>.<command>(<parameters>) syntax.
 Ex:
-`City.show(my_city_id)`
+City.show(my_city_id)
 ```
 ![Holberton logo](https://www.holbertonschool.com/holberton-logo.png)
-> Create a simple command interpreter to manage AirBnB objects
+
 
 ## Authors
 * **Julian David Gaitan S** - [JulianDavidG07](https://github.com/JulianDavidG07)
