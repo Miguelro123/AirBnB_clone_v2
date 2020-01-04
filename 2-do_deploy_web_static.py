@@ -4,22 +4,31 @@
 from fabric.api import *
 import os
 
-env.user = 'ubuntu'
-env.hosts = ['35.243.203.214', '35.227.127.123']
+env.hosts = ["35.237.254.224", "34.73.109.66"]
+env.user = "ubuntu"
+
 
 def do_deploy(archive_path):
-    """Fabric script to deploy web_static to servers"""
-    if os.path.exists(archive_path):
-        new_path = archive_path[9:]
-        de_path = '/data/web_static/releases/{}/'.format(new_path)[0:-5]
-        put(archive_path, '/tmp/')
-        run('mkdir -p {}'.format(de_path))
-        run('tar -xzf /tmp/{} -C {}'.format(new_path, de_path))
-        run('rm /tmp/{}'.format(new_path))
-        run('mv  {}/web_static/* {}'.format(de_path, de_path))
-        run('rm -rf {}/web_static'.format(de_path))
-        run('rm -rf /data/web_static/current')
-        run('ln -s {} /data/web_static/current'.format(de_path))
-        print('New version deployed successfully!')
-        return True
-    return False
+    """ Deploys archive to servers"""
+    if not os.path.exists(archive_path):
+        return False
+
+    results = []
+
+    res = put(archive_path, "/tmp")
+    results.append(res.succeeded)
+
+    basename = os.path.basename(archive_path)
+    if basename[-4:] == ".tgz":
+        name = basename[:-4]
+    newdir = "/data/web_static/releases/" + name
+    run("mkdir -p " + newdir)
+    run("tar -xzf /tmp/" + basename + " -C " + newdir)
+
+    run("rm /tmp/" + basename)
+    run("mv " + newdir + "/web_static/* " + newdir)
+    run("rm -rf " + newdir + "/web_static")
+    run("rm -rf /data/web_static/current")
+    run("ln -s " + newdir + " /data/web_static/current")
+
+    return True
