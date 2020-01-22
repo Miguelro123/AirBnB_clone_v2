@@ -7,16 +7,16 @@ app = Flask(__name__)
 app.url_map.strict_slashes = False
 
 
-@app.route('/states_list')
-def states_list():
-    """ Print the number """
-    return render_template("7-states_list.html", states=storage.all(State))
-
-
 @app.teardown_appcontext
 def teardown(error):
     """ close storage """
     storage.close()
+
+
+@app.route('/states_list')
+def states_list():
+    """ Print the number """
+    return render_template("7-states_list.html", states=storage.all(State))
 
 
 if __name__ == "__main__":
