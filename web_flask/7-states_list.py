@@ -10,7 +10,7 @@ app.url_map.strict_slashes = False
 
 
 @app.teardown_appcontext
-def teardown(error):
+def teardown(self):
     """ close storage """
     storage.close()
 
@@ -18,7 +18,7 @@ def teardown(error):
 @app.route('/states_list')
 def states_list():
     """ Print the number """
-    return render_template("7-states_list.html", states=storage.all(State))
+    return render_template("7-states_list.html", states=storage.all(State).values())
 
 
 if __name__ == "__main__":
