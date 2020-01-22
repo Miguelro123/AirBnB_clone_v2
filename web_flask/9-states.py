@@ -1,49 +1,46 @@
 #!/usr/bin/python3
 """ starts a Flask web application """
 
-from flask import Flask
-from flask import abort, render_template
+from flask import Flask, render_template
 from models import storage
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
-
-
-@app.route('/states')
-@app.route('/states/<id>')
-def get_state(id=None):
-    '''Get a state is id is provided then renders a template
-    with its cities
-    else if no id is provided print all states with their ids
-    Returns:
-        rendered template
-    '''
-    states_db = storage.all('State')
-    states = {'size': 0, 'states': list()}
-    if id:
-        key = 'State.{}'.format(id)
-        if key in states_db:
-            states['states'].append(states_db.get(key))
-            states['size'] = 1
-        else:
-            states = None
-    else:
-        for key, state in states_db.items():
-            states['size'] += 1
-            states['states'].append({
-                'id': state.id,
-                'name': state.name,
-            })
-            states['states'] = sorted(
-                states['states'], key=lambda s: s['name'])
-    return render_template("9-states.html", item=states)
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
 
 
 @app.teardown_appcontext
-def teardown_storage(self):
-    """ close storage """
+def teardown_app(exception):
+    """Calls Storage close on appcontext"""
     storage.close()
 
 
+@app.route('/states')
+def states():
+    states = []
+    for key, values in storage.all('State').items():
+        states.append(values)
+    return render_template('9-states.html', states=states)
+
+
+@app.route('/states/<id>')
+def states_var(id=None):
+    cities = []
+    for key, values in storage.all('City').items():
+        if values.state_id == str(id):
+            cities.append(values)
+
+    name = None
+    for key, values in storage.all('State').items():
+        if values.id == str(id):
+            name = values.name
+
+    if len(cities) == 0 and name is None:
+        return render_template('9-states.html', err=1)
+
+    return render_template('9-states.html', name=name, cities=cities)
+
+
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    app.run(host="0.0.0.0", port=5000)
