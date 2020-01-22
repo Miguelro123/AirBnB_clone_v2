@@ -6,18 +6,18 @@ from models import storage
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
-app.jinja_env.trim_blocks = True
-app.jinja_env.lstrip_blocks = True
 
 
 @app.teardown_appcontext
-def teardown_app(exception):
+def teardown_app(self):
     """Calls Storage close on appcontext"""
     storage.close()
 
 
 @app.route('/states')
-def states():
+@app.route('/states_list')
+def states_list():
+    """ Print the number """
     states = []
     for key, values in storage.all('State').items():
         states.append(values)
