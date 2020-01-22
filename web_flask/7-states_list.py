@@ -18,7 +18,7 @@ def teardown(self):
 @app.route('/states_list')
 def states_list():
     """ Print the number """
-    return render_template("7-states_list.html", states=storage.all(State).values())
+    return render_template("7-states_list.html", states=storage.all(State))
 
 
 if __name__ == "__main__":
