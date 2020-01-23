@@ -7,10 +7,10 @@ from models.state import State
 
 
 app = Flask(__name__)
-
+app.url_map.strict_slashes = False
 
 @app.teardown_appcontext
-def teardown_storage(self):
+def teardown(self):
     """Close storage session"""
     storage.close()
 
@@ -18,7 +18,7 @@ def teardown_storage(self):
 @app.route('/states_list', strict_slashes=False)
 def states_list():
     """display a HTML page with all states and cities"""
-    states = storage.all('State')
+    states = storage.all(State)
     return render_template('7-states_list.html', states=states)
 
 if __name__ == '__main__':
